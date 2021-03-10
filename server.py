@@ -6,6 +6,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import socket
 # Прежде всего нам необходимо создать сокет:
 server = socket.socket(
@@ -19,42 +20,58 @@ server.bind(
 
 server.listen() #может принимать некоторое количество сообщений
 print("Server is listening")
-client_socket, client_address = server.accept()
 
+quit = False
+while not quit:
+    try:
+        client_socket, client_address = server.accept()
 
-#Принимаю картинку
-file = open('image_server.png', mode="wb")  #открыть для записи принимаемой картинки файл
-data = client_socket.recv(2048)
+        #Принимаю картинку
+        file = open('image_server.png', mode="wb")  #открыть для записи принимаемой картинки файл
+        data = client_socket.recv(2048)
 
-while data:
-    file.write(data)
-    data = client_socket.recv(2048)
+        while data:
+            file.write(data)
+            data = client_socket.recv(2048)
 
-file.close()
+        file.close()
 
-#Применение медианного фильтра
-# взято c https://coderlessons.com/articles/programmirovanie/filtratsiia-izobrazhenii-v-python
-#import argparse
-import cv2
+        #Применение медианного фильтра
+        # взято c https://coderlessons.com/articles/programmirovanie/filtratsiia-izobrazhenii-v-python
+        #import argparse
+        import cv2
 
-# create the argument parser and parse the arguments
-"""
-#Полезный код для указания пути к картинке
-ap = argparse.ArgumentParser()
-ap.add_argument('-i', '—image', required = True, help = 'Path to the input image')
-args = vars(ap.parse_args())
-"""
-# read the image
-#image = cv2.imread(args['image'])
-image = cv2.imread('image_server.png')
-# apply the 50×50 median filter on the image
-processed_image = cv2.medianBlur(image, 50)
-# display image
-cv2.imshow('Median Filter Processing', processed_image)
-# save image to disk
-cv2.imwrite('image_server_filter.png', processed_image)
-# pause the execution of the script until a key on the keyboard is pressed
-cv2.waitKey(0)
+        # create the argument parser and parse the arguments
+        """
+        #Полезный код для указания пути к картинке
+        ap = argparse.ArgumentParser()
+        ap.add_argument('-i', '—image', required = True, help = 'Path to the input image')
+        args = vars(ap.parse_args())
+        """
+        # read the image
+        #image = cv2.imread(args['image'])
+        image = cv2.imread('image_server.png')
+        # apply the 50×50 median filter on the image
+        processed_image = cv2.medianBlur(image, 10)
+
+        # save image to disk
+        cv2.imwrite('image_server_filter.png', processed_image)
+        # display image
+        #cv2.imshow('Median Filter Processing', processed_image)
+        # pause the execution of the script until a key on the keyboard is pressed
+        #cv2.waitKey(0)
+    except:
+        print('\n[Сервер остановлен]')
+        quit = True
+    #except OSError as err:
+    #    print("OS error: {0}".format(err))
+    #except ValueError:
+    #   print("Could not convert data to an integer.")
+    #except:
+    #   print("Unexpected error:", sys.exc_info()[0])
+    #   raise
+server.close()
+
 
 
 
