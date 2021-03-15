@@ -4,7 +4,7 @@
 """
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import os
 import socket
 # Создание клиента:
 client = socket.socket(
@@ -19,6 +19,11 @@ client.connect(
 
 # считывает и отправляет картинку
 file = open('image.png', mode="rb") #считываем картинку
+
+imageSize = os.path.getsize('image.png')
+print("Size of image:", imageSize)
+client.send(str(imageSize).encode('utf-16'))
+
 data = file.read(2048)
 
 while data:

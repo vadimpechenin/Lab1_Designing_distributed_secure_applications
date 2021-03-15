@@ -21,19 +21,28 @@ server.bind(
 server.listen() #может принимать некоторое количество сообщений
 print("Server is listening")
 
-quit = False
-while not quit:
+#quit = False
+while True:
     try:
         client_socket, client_address = server.accept()
+        data = client_socket.recv(2048)
+        sizeOfImage = int(data.decode('utf-16'))
+        print("Size of input image:", sizeOfImage)
 
         #Принимаю картинку
         file = open('image_server.png', mode="wb")  #открыть для записи принимаемой картинки файл
-        data = client_socket.recv(2048)
 
         while data:
             file.write(data)
             data = client_socket.recv(2048)
-
+        """while sizeOfImage > 0:
+            data = client_socket.recv(2048)
+            file.write(data)
+            if (sizeOfImage>=2048):
+                sizeOfImage = sizeOfImage - 2048
+            else:
+                sizeOfImage = sizeOfImage - sizeOfImage
+        """
         file.close()
 
         #Применение медианного фильтра
@@ -56,13 +65,15 @@ while not quit:
 
         # save image to disk
         cv2.imwrite('image_server_filter.png', processed_image)
+        print("Картинка была принята", '\n')
         # display image
         #cv2.imshow('Median Filter Processing', processed_image)
         # pause the execution of the script until a key on the keyboard is pressed
         #cv2.waitKey(0)
     except:
         print('\n[Сервер остановлен]')
-        quit = True
+        #quit = True
+        break
     #except OSError as err:
     #    print("OS error: {0}".format(err))
     #except ValueError:
